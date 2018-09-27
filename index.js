@@ -16,6 +16,14 @@ function numbersWithCommas(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+function clearInput() {
+    suggestions.innerHTML =
+        `
+            <li>Filter for a city</li>
+            <li>or a state</li>
+        `
+}
+
 function findMatches(wordToMatch, cities) {
     return cities.filter(place => {
         const regex = new RegExp(wordToMatch, 'gi');
@@ -24,19 +32,24 @@ function findMatches(wordToMatch, cities) {
 }
 
 function displayMatches() {
-    const matches = findMatches(this.value, cities);
-    const list = matches.map(place => {
-        const regex = new RegExp(this.value, 'gi');
-        const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
-        const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
-        return `
+    if (this.value !== '') {
+        const matches = findMatches(this.value, cities);
+        const list = matches.map(place => {
+            const regex = new RegExp(this.value, 'gi');
+            const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+            const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+            return `
         <li>
             <span class="name">${cityName}, ${stateName}</span>
             <span class="population">${numbersWithCommas(place.population)}</span>
         </li>
         `;
-    }).join('');
-    suggestions.innerHTML = list;
+        }).join('');
+        suggestions.innerHTML = list;
+    } else {
+        clearInput();
+    }
+
 }
 
 input.addEventListener('change', displayMatches);
